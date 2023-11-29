@@ -10,7 +10,8 @@
 
 int main() {
     struct BinaryInterpolation bin_ip;
-    int n = 11;
+    int nx = 11;
+    int ny = 6;
     double x[11] = {0. , 0.5, 1. , 1.5, 2. , 2.5, 3. , 3.5, 4. , 4.5, 5. };
     double y[6] = {-1.,  0.,  1.,  2.,  3.,  4.};
     double z[121] = {2.00000000e+00,  1.21302083e+00,  7.33333333e-01,  4.20312500e-01,
@@ -30,7 +31,7 @@ int main() {
        -7.88463542e+00, -4.76666667e+00, -2.73203125e+00, -8.66666667e-01,
         2.14973958e+00,  8.45000000e+00,  2.13856771e+01,  4.59333333e+01,
         8.91007812e+01,  1.60333333e+02};
-    initializeBinaryInterpolation(&bin_ip, n, n, x, y, z);
+    makeBinaryInterpolation(&bin_ip, nx, ny, x, y, z);
     int minor_n = 101;
     double* minor_x = (double*)malloc(minor_n*sizeof(double));
     double* minor_y = (double*)malloc(minor_n*sizeof(double));

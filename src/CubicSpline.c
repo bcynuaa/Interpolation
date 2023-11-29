@@ -31,28 +31,9 @@ void calInterval(struct CubicSpline* spline) {
     return;
 };
 
-void initializeCubicSpline(struct CubicSpline* spline, int n, double* x, double* y) {
-    spline->n_ = n;
-    spline->x_ = (double*)malloc(n*sizeof(double));
-    spline->y_ = (double*)malloc(n*sizeof(double));
-    for (int i = 0; i < n; i++) {
-        spline->x_[i] = x[i];
-        spline->y_[i] = y[i];
-    }
-    spline->h_ = (double*)malloc((n-1)*sizeof(double));
-    spline->m_ = (double*)malloc(n*sizeof(double));
-    spline->min_x_ = x[0];
-    spline->max_x_ = x[n-1];
-    calInterval(spline);
-    spline->m_[0] = centerDerivative2(spline->x_, spline->y_, spline->h_, 1);
-    spline->m_[n-1] = centerDerivative2(spline->x_, spline->y_, spline->h_, n-2);
-    return;
-};
-
 void calMatrix(struct CubicSpline* spline, double* a, double* b, double* c, double* d) {
-    int i;
     // regardless the first and last point
-    for (i=0; i < spline->n_-2; i++) {
+    for (int i=0; i < spline->n_-2; i++) {
         a[i] = spline->h_[i];
         b[i] = 2*(spline->h_[i]+spline->h_[i+1]);
         c[i] = spline->h_[i+1];
@@ -67,14 +48,13 @@ void thomas(int n, double* res, double* a, double* b, double* c, double* d) {
     double* beta = (double*)malloc(n*sizeof(double));
     beta[0] = b[0];
     y[0] = d[0];
-    int i;
-    for (i = 1; i < n; i++) {
+    for (int i = 1; i < n; i++) {
         l[i] = a[i]/beta[i-1];
         beta[i] = b[i] - l[i]*c[i-1];
         y[i] = d[i] - l[i]*y[i-1];
     }
     res[n-1] = y[n-1] / beta[n-1];
-    for (i = n-2; i > -1; i--) {
+    for (int i = n-2; i > -1; i--) {
         res[i] = (y[i] - c[i] * res[i+1]) / beta[i];
     }
     free(l);
@@ -83,7 +63,7 @@ void thomas(int n, double* res, double* a, double* b, double* c, double* d) {
     return;
 };
 
-void makeCubicSpline(struct CubicSpline* spline) {
+void calCubicSpline(struct CubicSpline* spline) {
     double* a = (double*)malloc( (spline->n_-2)*sizeof(double) );
     double* b = (double*)malloc( (spline->n_-2)*sizeof(double) );
     double* c = (double*)malloc( (spline->n_-2)*sizeof(double) );
@@ -102,10 +82,28 @@ void makeCubicSpline(struct CubicSpline* spline) {
     free(d);
     free(m);
     return;
-}
+};
+
+void makeCubicSpline(struct CubicSpline* spline, int n, double* x, double* y) {
+    spline->n_ = n;
+    spline->x_ = (double*)malloc(n*sizeof(double));
+    spline->y_ = (double*)malloc(n*sizeof(double));
+    for (int i = 0; i < n; i++) {
+        spline->x_[i] = x[i];
+        spline->y_[i] = y[i];
+    }
+    spline->h_ = (double*)malloc((n-1)*sizeof(double));
+    spline->m_ = (double*)malloc(n*sizeof(double));
+    spline->min_x_ = x[0];
+    spline->max_x_ = x[n-1];
+    calInterval(spline);
+    spline->m_[0] = centerDerivative2(spline->x_, spline->y_, spline->h_, 1);
+    spline->m_[n-1] = centerDerivative2(spline->x_, spline->y_, spline->h_, n-2);
+    calCubicSpline(spline);
+    return;
+};
 
 double interpolate(struct CubicSpline* spline, double x) {
-    int i = 0;
     if (x < spline->min_x_) {
         x = spline->min_x_;
         return spline->y_[0] + (spline->y_[1]-spline->y_[0]) * (x-spline->x_[0]) / spline->h_[0];
@@ -115,6 +113,7 @@ double interpolate(struct CubicSpline* spline, double x) {
         return spline->y_[spline->n_-1] + (spline->y_[spline->n_-1]-spline->y_[spline->n_-2]) * (x-spline->x_[spline->n_-1]) / spline->h_[spline->n_-2];
     }
     else {
+        int i;
         for (i = 0; i < spline->n_-1; i++) {
             if (x >= spline->x_[i] && x <= spline->x_[i+1]) {
                 break;
@@ -134,7 +133,6 @@ double interpolate(struct CubicSpline* spline, double x) {
 };
 
 double interpolateDerivative1(struct CubicSpline* spline, double x) {
-    int i = 0;
     if (x < spline->min_x_) {
         x = spline->min_x_;
         return (spline->y_[1]-spline->y_[0]) / spline->h_[0];
@@ -144,6 +142,7 @@ double interpolateDerivative1(struct CubicSpline* spline, double x) {
         return (spline->y_[spline->n_-1]-spline->y_[spline->n_-2]) / spline->h_[spline->n_-2];
     }
     else {
+        int i;
         for (i = 0; i < spline->n_-1; i++) {
             if (x >= spline->x_[i] && x <= spline->x_[i+1]) {
                 break;
@@ -163,7 +162,6 @@ double interpolateDerivative1(struct CubicSpline* spline, double x) {
 };
 
 double interpolateDerivative2(struct CubicSpline* spline, double x) {
-    int i = 0;
     if (x < spline->min_x_) {
         return spline->m_[0];
     }
@@ -171,6 +169,7 @@ double interpolateDerivative2(struct CubicSpline* spline, double x) {
         return spline->m_[spline->n_-1];
     }
     else {
+        int i;
         for (i = 0; i < spline->n_-1; i++) {
             if (x >= spline->x_[i] && x <= spline->x_[i+1]) {
                 break;
@@ -185,6 +184,14 @@ double interpolateDerivative2(struct CubicSpline* spline, double x) {
         double y = (m0*(x1-x) + m1*(x-x0)) / spline->h_[i];
         return y;
     }
+};
+
+void freeCubicSpline(struct CubicSpline* spline) {
+    free(spline->x_);
+    free(spline->y_);
+    free(spline->m_);
+    free(spline->h_);
+    return;
 };
 
 #endif // CUBICSPLINE_C_

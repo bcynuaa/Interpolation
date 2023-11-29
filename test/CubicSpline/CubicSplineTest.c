@@ -14,8 +14,7 @@ int main() {
     double y[11] = {-1.        , -0.60651042, -0.36666667, -0.21015625, -0.06666667,
         0.16536458,  0.65      ,  1.64505208,  3.53333333,  6.85390625, 12.33333333};
     struct CubicSpline spline;
-    initializeCubicSpline(&spline, n, x, y);
-    makeCubicSpline(&spline);
+    makeCubicSpline(&spline, n, x, y);
     int i = 0;
     int minor_n = 101;
     double* x_minor = (double*)malloc(minor_n*sizeof(double));
@@ -41,5 +40,6 @@ int main() {
         fprintf(fp, "%f %f %f %f\n", x_minor[i], y_minor[i], y1_minor[i], y2_minor[i]);
     }
     fclose(fp);
+    freeCubicSpline(&spline);
     return 0;
 }
