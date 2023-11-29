@@ -1,3 +1,10 @@
+/**
+ * @ author: Chenyu Bao
+ * @ email: bcynuaa@163.com
+ * @ date: 2023-11-29 20:30:40
+ * @ description:
+ */
+
 #include <stdio.h>
 #include "CubicSpline.c"
 

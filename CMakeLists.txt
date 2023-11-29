@@ -8,3 +8,4 @@ set(LIB_PATH_ ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 set(TEST_PATH_ ${CMAKE_CURRENT_SOURCE_DIR}/test)
 
 add_subdirectory(${TEST_PATH_}/CubicSpline)
+add_subdirectory(${TEST_PATH_}/BinaryInterpolation)

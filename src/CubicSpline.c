@@ -1,3 +1,10 @@
+/**
+ * @ author: Chenyu Bao
+ * @ email: bcynuaa@163.com
+ * @ date: 2023-11-29 16:41:54
+ * @ description:
+ */
+
 #ifndef CUBICSPLINE_C_
 #define CUBICSPLINE_C_
 
@@ -26,8 +33,12 @@ void calInterval(struct CubicSpline* spline) {
 
 void initializeCubicSpline(struct CubicSpline* spline, int n, double* x, double* y) {
     spline->n_ = n;
-    spline->x_ = x;
-    spline->y_ = y;
+    spline->x_ = (double*)malloc(n*sizeof(double));
+    spline->y_ = (double*)malloc(n*sizeof(double));
+    for (int i = 0; i < n; i++) {
+        spline->x_[i] = x[i];
+        spline->y_[i] = y[i];
+    }
     spline->h_ = (double*)malloc((n-1)*sizeof(double));
     spline->m_ = (double*)malloc(n*sizeof(double));
     spline->min_x_ = x[0];
@@ -93,9 +104,8 @@ void makeCubicSpline(struct CubicSpline* spline) {
     return;
 }
 
-double interpolate(struct CubicSpline* spline, double xin) {
+double interpolate(struct CubicSpline* spline, double x) {
     int i = 0;
-    double x = xin;
     if (x < spline->min_x_) {
         x = spline->min_x_;
         return spline->y_[0] + (spline->y_[1]-spline->y_[0]) * (x-spline->x_[0]) / spline->h_[0];
@@ -123,9 +133,8 @@ double interpolate(struct CubicSpline* spline, double xin) {
     }
 };
 
-double interpolateDerivative1(struct CubicSpline* spline, double xin) {
+double interpolateDerivative1(struct CubicSpline* spline, double x) {
     int i = 0;
-    double x = xin;
     if (x < spline->min_x_) {
         x = spline->min_x_;
         return (spline->y_[1]-spline->y_[0]) / spline->h_[0];
@@ -153,9 +162,8 @@ double interpolateDerivative1(struct CubicSpline* spline, double xin) {
     }
 };
 
-double interpolateDerivative2(struct CubicSpline* spline, double xin) {
+double interpolateDerivative2(struct CubicSpline* spline, double x) {
     int i = 0;
-    double x = xin;
     if (x < spline->min_x_) {
         return spline->m_[0];
     }
