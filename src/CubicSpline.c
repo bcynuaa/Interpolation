@@ -10,6 +10,16 @@
 
 #include <stdlib.h>
 
+int findFirstIndex(double* x, int n, double x0) {
+    int i = 0;
+    for (i = 0; i < n-1; i++) {
+        if (x0 >= x[i] && x0 <= x[i+1]) {
+            break;
+        }
+    }
+    return i;
+};
+
 struct CubicSpline {
     int n_; // number of points
     double* x_;
@@ -57,9 +67,9 @@ void thomas(int n, double* res, double* a, double* b, double* c, double* d) {
     for (int i = n-2; i > -1; i--) {
         res[i] = (y[i] - c[i] * res[i+1]) / beta[i];
     }
-    free(l);
-    free(y);
-    free(beta);
+    free(l); l = NULL;
+    free(y); y = NULL;
+    free(beta); beta = NULL;
     return;
 };
 
@@ -76,11 +86,11 @@ void calCubicSpline(struct CubicSpline* spline) {
     for (int i = 0; i < spline->n_-2; i++) {
         spline->m_[i+1] = m[i];
     }
-    free(a);
-    free(b);
-    free(c);
-    free(d);
-    free(m);
+    free(a); a = NULL;
+    free(b); b = NULL;
+    free(c); c = NULL;
+    free(d); d = NULL;
+    free(m); m = NULL;
     return;
 };
 
@@ -113,12 +123,7 @@ double interpolate(struct CubicSpline* spline, double x) {
         return spline->y_[spline->n_-1] + (spline->y_[spline->n_-1]-spline->y_[spline->n_-2]) * (x-spline->x_[spline->n_-1]) / spline->h_[spline->n_-2];
     }
     else {
-        int i;
-        for (i = 0; i < spline->n_-1; i++) {
-            if (x >= spline->x_[i] && x <= spline->x_[i+1]) {
-                break;
-            }
-        }
+        int i = findFirstIndex(spline->x_, spline->n_, x);
         double x0 = spline->x_[i];
         double x1 = spline->x_[i+1];
         double y0 = spline->y_[i];
@@ -142,12 +147,7 @@ double interpolateDerivative1(struct CubicSpline* spline, double x) {
         return (spline->y_[spline->n_-1]-spline->y_[spline->n_-2]) / spline->h_[spline->n_-2];
     }
     else {
-        int i;
-        for (i = 0; i < spline->n_-1; i++) {
-            if (x >= spline->x_[i] && x <= spline->x_[i+1]) {
-                break;
-            }
-        }
+        int i = findFirstIndex(spline->x_, spline->n_, x);
         double x0 = spline->x_[i];
         double x1 = spline->x_[i+1];
         double y0 = spline->y_[i];
@@ -169,12 +169,7 @@ double interpolateDerivative2(struct CubicSpline* spline, double x) {
         return spline->m_[spline->n_-1];
     }
     else {
-        int i;
-        for (i = 0; i < spline->n_-1; i++) {
-            if (x >= spline->x_[i] && x <= spline->x_[i+1]) {
-                break;
-            }
-        }
+        int i = findFirstIndex(spline->x_, spline->n_, x);
         double x0 = spline->x_[i];
         double x1 = spline->x_[i+1];
         double y0 = spline->y_[i];
@@ -187,10 +182,10 @@ double interpolateDerivative2(struct CubicSpline* spline, double x) {
 };
 
 void freeCubicSpline(struct CubicSpline* spline) {
-    free(spline->x_);
-    free(spline->y_);
-    free(spline->m_);
-    free(spline->h_);
+    free(spline->x_); spline->x_ = NULL;
+    free(spline->y_); spline->y_ = NULL;
+    free(spline->m_); spline->m_ = NULL;
+    free(spline->h_); spline->h_ = NULL;
     return;
 };
 

@@ -42,7 +42,7 @@ void makeBinaryInterpolation(struct BinaryInterpolation* interpolation, int n_x,
         }
         makeCubicSpline(&interpolation->x_spline_[i], n_x, x, z_spline_y);
     }
-    free(z_spline_y);
+    free(z_spline_y); z_spline_y = NULL;
     return;
 };
 
@@ -54,7 +54,7 @@ double binaryInterpolate(struct BinaryInterpolation* interpolation, double x, do
     struct CubicSpline y_spline;
     makeCubicSpline(&y_spline, interpolation->n_y_, interpolation->y_, z_spline_y);
     double res = interpolate(&y_spline, y);
-    free(z_spline_y);
+    free(z_spline_y); z_spline_y = NULL;
     freeCubicSpline(&y_spline);
     return res;
 };
@@ -67,7 +67,7 @@ double binaryInterpolateDerivativeX1(struct BinaryInterpolation* interpolation, 
     struct CubicSpline y_spline;
     makeCubicSpline(&y_spline, interpolation->n_y_, interpolation->y_, z_spline_y);
     double res = interpolate(&y_spline, y);
-    free(z_spline_y);
+    free(z_spline_y); z_spline_y = NULL;
     freeCubicSpline(&y_spline);
     return res;
 };
@@ -80,7 +80,7 @@ double binaryInterpolateDerivativeX2(struct BinaryInterpolation* interpolation, 
     struct CubicSpline y_spline;
     makeCubicSpline(&y_spline, interpolation->n_y_, interpolation->y_, z_spline_y);
     double res = interpolate(&y_spline, y);
-    free(z_spline_y);
+    free(z_spline_y); z_spline_y = NULL;
     freeCubicSpline(&y_spline);
     return res;
 };
@@ -93,7 +93,7 @@ double binaryInterpolateDerivativeY1(struct BinaryInterpolation* interpolation, 
     struct CubicSpline y_spline;
     makeCubicSpline(&y_spline, interpolation->n_y_, interpolation->y_, z_spline_y);
     double res = interpolateDerivative1(&y_spline, y);
-    free(z_spline_y);
+    free(z_spline_y); z_spline_y = NULL;
     freeCubicSpline(&y_spline);
     return res;
 };
@@ -106,7 +106,7 @@ double binaryInterpolateDerivativeY2(struct BinaryInterpolation* interpolation, 
     struct CubicSpline y_spline;
     makeCubicSpline(&y_spline, interpolation->n_y_, interpolation->y_, z_spline_y);
     double res = interpolateDerivative2(&y_spline, y);
-    free(z_spline_y);
+    free(z_spline_y); z_spline_y = NULL;
     freeCubicSpline(&y_spline);
     return res;
 };
