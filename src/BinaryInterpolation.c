@@ -85,6 +85,19 @@ double binaryInterpolateDerivativeX2(struct BinaryInterpolation* interpolation, 
     return res;
 };
 
+double binaryInterpolateDerivativeX1Y1(struct BinaryInterpolation* interpolation, double x, double y) {
+    double* z_spline_y = (double*)malloc(interpolation->n_y_*sizeof(double));
+    for (int i = 0; i < interpolation->n_y_; i++) {
+        z_spline_y[i] = interpolateDerivative1(&interpolation->x_spline_[i], x);
+    }
+    struct CubicSpline y_spline;
+    makeCubicSpline(&y_spline, interpolation->n_y_, interpolation->y_, z_spline_y);
+    double res = interpolateDerivative1(&y_spline, y);
+    free(z_spline_y); z_spline_y = NULL;
+    freeCubicSpline(&y_spline);
+    return res;
+};
+
 double binaryInterpolateDerivativeY1(struct BinaryInterpolation* interpolation, double x, double y) {
     double* z_spline_y = (double*)malloc(interpolation->n_y_*sizeof(double));
     for (int i = 0; i < interpolation->n_y_; i++) {
